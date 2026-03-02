@@ -1,0 +1,51 @@
+{
+	"Name": "AWMBatteryStatus",
+	"Version": "0.1.0.0",
+	"Author": "Ash Matheson",
+	"Actions": [
+		{
+			"Name": "Mouse Battery",
+			"UUID": "com.ash-matheson.batterystatus.battery",
+			"Icon": "imgs/actions/counter/icon",
+			"Tooltip": "Displays the wireless mouse battery level. Press to refresh.",
+			"PropertyInspectorPath": "ui/battery-status.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/counter/key",
+					"TitleAlignment": "top"
+				},
+				{
+					"Image": "imgs/actions/counter/key",
+					"TitleAlignment": "bottom"
+				}
+			]
+		}
+	],
+	"Category": "BatteryStatus",
+	"CategoryIcon": "imgs/plugin/category-icon",
+	"CodePath": "bin/plugin.js",
+	"Description": "A plugin to check various battery statuses",
+	"Icon": "imgs/plugin/marketplace",
+	"SDKVersion": 3,
+	"Software": {
+		"MinimumVersion": "6.9"
+	},
+	"OS": [
+		{
+			"Platform": "mac",
+			"MinimumVersion": "12"
+		},
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Nodejs": {
+		"Version": "20",
+		"Debug": "enabled"
+	},
+	"UUID": "com.ash-matheson.batterystatus"
+}
