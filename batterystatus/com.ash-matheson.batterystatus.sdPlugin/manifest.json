@@ -19,7 +19,7 @@
 				},
 				{
 					"Image": "imgs/actions/counter/key",
-					"TitleAlignment": "bottom"
+					"TitleAlignment": "top"
 				}
 			]
 		}

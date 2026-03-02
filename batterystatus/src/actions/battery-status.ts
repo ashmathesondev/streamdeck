@@ -1,4 +1,4 @@
-import { action, DidReceiveSettingsEvent, KeyDownEvent, SingletonAction, WillAppearEvent, WillDisappearEvent } from "@elgato/streamdeck";
+import { action, DidReceiveSettingsEvent, KeyDownEvent, SingletonAction, WillAppearEvent, WillDisappearEvent, TitleParametersDidChangeEvent } from "@elgato/streamdeck";
 import type { DialAction, KeyAction } from "@elgato/streamdeck";
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -69,11 +69,31 @@ export class BatteryStatus extends SingletonAction<BatterySettings> {
 	private readonly visibleActions = new Map<string, ActionEntry>();
 
 	override onWillAppear(ev: WillAppearEvent<BatterySettings>): void {
-		this.visibleActions.set(ev.action.id, { action: ev.action, settings: ev.payload.settings });
+	// Prefer host-provided title alignment when available so we don't overwrite
+	// the user's choice in the Stream Deck app.
+	const initialSettings = ev.payload.settings ?? {};
+	const hostAlign = (ev.payload as any)?.titleParameters?.titleAlignment;
+	if (hostAlign === "bottom") initialSettings.titlePosition = "bottom";
+	else if (hostAlign === "top" || hostAlign === "middle") initialSettings.titlePosition = initialSettings.titlePosition ?? "top";
+
+	this.visibleActions.set(ev.action.id, { action: ev.action, settings: initialSettings });
 		if (this.intervalId === null) {
 			void this.pollAll();
 			this.intervalId = setInterval(() => void this.pollAll(), POLL_INTERVAL_MS);
 		}
+	}
+
+	// Mirror title alignment chosen in the Stream Deck app so we don't stomp
+	// the user's preference each poll.
+	override onTitleParametersDidChange(ev: TitleParametersDidChangeEvent): void {
+		const entry = this.visibleActions.get(ev.action.id);
+		if (!entry) return;
+
+		const align = (ev.payload as any)?.titleParameters?.titleAlignment;
+		if (align === "bottom") entry.settings.titlePosition = "bottom";
+		else entry.settings.titlePosition = "top";
+
+		void this.updateAction(entry);
 	}
 
 	override onWillDisappear(ev: WillDisappearEvent<BatterySettings>): void {
